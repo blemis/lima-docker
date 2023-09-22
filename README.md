@@ -30,7 +30,7 @@ OPERATIONS:
 3) prereq  - will check and install brew pre-reqs for the script
 4) start   - will start the docker vm and switch the docker context to that vm
 5) stop    - will stop the docker vm and switch the docker context to 'default'
-6) delete  - will delete the docker vm and swithc the docker context to 'default'
+6) delete  - will delete the docker vm and switch the docker context to 'default'
 7) help    - will display help
 
    
