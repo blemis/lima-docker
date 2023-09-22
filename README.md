@@ -3,7 +3,7 @@ lima-docker script for Apple Silicon Macs
 
 Sets up up a remote docker VM that works with M1/M2 macs.  
 
-Example lima config file uses.
+Example lima-docker-rootful.yaml config file uses.
 1) ubuntu base image - no cgroups v2 issues like colima (Alpine) has
 2) vcpus:4
 3) mem:12GB
