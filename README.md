@@ -5,9 +5,12 @@ Sets up up a remote docker VM that works with M1/M2 macs.
 
 Example lima config file uses.
 1) ubuntu base image - no cgroups v2 issues like colima (Alpine) has
-2) vmType: vz
-3) mountType: virtiofs
-4) additional mount points for gardener (i.e. BackupBucket)
+2) vcpus:4
+3) mem:12GB
+4) Disk:120GB
+5) vmType: vz
+6) mountType: virtiofs
+7) additional mount points for gardener (i.e. BackupBucket)
 
 Tailor to your specific needs!
 
