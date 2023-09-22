@@ -5,6 +5,8 @@ PREREQS=( lima socket_vmnet )
 
 # name docker VM context
 CONTEXT="lima-docker-rootful"
+
+# lima config locations
 LIMACFG="$HOME/artifacts/lima/$CONTEXT.yaml"
 LIMADIR="$HOME/.lima"
 
@@ -19,7 +21,7 @@ MAG='\033[0;35m'
 NO_COLOR='\033[0m'
 
 # Actions
-ACTIONS=( test log prereq status start stop delete )
+ACTIONS=( test log prereq status start stop delete help )
 
 # Check Line Args (should be 1)
 if [ "$#" -lt 1 ]; then
@@ -49,6 +51,17 @@ check_priv() {
 # Show log
 show_log() {
   cat $LIMADIR/log
+}
+
+# Show help
+show_help() {
+  printf "${CYAN}test    - will run docker hello-world\n"
+  printf "${CYAN}log     - will display the latest log from the script\n"
+  printf "${CYAN}prereq  - will check and install brew pre-reqs for the script\n"
+  printf "${CYAN}start   - will start the docker vm and switch the docker context to that vm\n"
+  printf "${CYAN}stop    - will stop the docker vm and switch the docker context to 'default'\n"
+  printf "${CYAN}delete  - will delete the docker vm and switch the docker context to 'default'\n"
+  printf "${CYAN}help    - show this\n"
 }
 
 # Check brew formulas
@@ -158,6 +171,8 @@ function docker_test() {
 printf "\n\n${BLUE}***********************************************\n"
 check_priv
 case $OP in
+   help)
+     show_help;;
    log)
      show_log;;
    prereq)

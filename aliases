@@ -1,0 +1,8 @@
+alias limastart="$HOME/scripts/lima-docker.sh start"
+alias limapre="$HOME/scripts/lima-docker.sh prereq"
+alias limastop="$HOME/scripts/lima-docker.sh stop"
+alias limarm="$HOME/scripts/lima-docker.sh delete"
+alias limalog="$HOME/scripts/lima-docker.sh log"
+alias limastat="$HOME/scripts/lima-docker.sh status"
+alias limatest="$HOME/scripts/lima-docker.sh test"
+alias limahelp="$HOME/scripts/lima-docker.sh help"
