@@ -13,6 +13,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
+# Jeff Estes, SCS 
+#
+
+# Version
+VERSION=1.0
 
 # Using Gardener?
 GARDENER=true
@@ -81,6 +87,7 @@ show_help() {
   printf "${MAG}${0##*/} ${YELLOW}stop    - ${GREEN}will stop the Docker VM and switch the Docker Context to ${CYAN}\$DEFAULT\n"
   printf "${MAG}${0##*/} ${YELLOW}delete  - ${GREEN}will delete the Docker VM and switch the Docker Context to ${CYAN}\$DEFAULT\n"
   printf "${MAG}${0##*/} ${YELLOW}fix     - ${GREEN}will switch the Docker Context to ${CYAN}\$CONTEXT\n"
+  printf "${MAG}${0##*/} ${YELLOW}version - ${GREEN}will display the version info\n"
   printf "${MAG}${0##*/} ${YELLOW}help    - ${GREEN}show this\n"
 }
 
@@ -250,6 +257,8 @@ case $OP in
      docker_test;;
    fix)
     fix_context;;
+   version)
+     printf "\nVersion: $VERSION";;
    *)
      status;;
 esac
