@@ -26,8 +26,11 @@ Tailor to your specific needs!
 4) Configure lima home directory. (i.e. $HOME/.lima)
 
 The name of the lima config yaml file should match the name of the context.
+
 (Example)
+
 CONTEXT="lima-docker-rootful"
+
 LIMACFG="$Home/artifacts/lima/lima-docker-rootful.yaml"
 
 ## ARGS:  
