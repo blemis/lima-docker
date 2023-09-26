@@ -33,10 +33,6 @@ CONTEXT="lima-docker-rootful"
 
 LIMACFG="$Home/artifacts/lima/lima-docker-rootful.yaml"
 
-## Aliases
-
-add to your .bashrc, .bash_aliases, or .zshrc file
-
 ## Command Line ARGS:  
 
 lima-docker.sh ARG
@@ -52,5 +48,6 @@ lima-docker.sh ARG
 9) version - will display the version info
 10) shell  - will launch bash shell in DOCKER VM $CONTEXT
 11) help   - will display help
+## Aliases
 
-   
+add to your .bashrc, .bash_aliases, or .zshrc file
