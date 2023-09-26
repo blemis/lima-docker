@@ -67,8 +67,8 @@ check_priv() {
     printf "\n${CYAN}✅ Please ${MAG}use ${GREEN}Privileges ${CYAN}to become an administrator and ${MAG}Re-Run ${CYAN}the script.\n"
     printf "\n\n${BLUE}***********************************************\n"
     exit 1
-  else
-    printf "\n${MAG}✅ Running ${CYAN}as ${GREEN}Admin.\n\n"
+  #else
+  #  printf "\n${MAG}✅ Running ${CYAN}as ${GREEN}Admin.\n\n"
   fi
 }
 
@@ -234,7 +234,8 @@ function docker_test() {
   fi
 }
 
-printf "\n\n${BLUE}***********************************************\n"
+printf "${GREEN}Running $OP\n"
+printf "${BLUE}***********************************************\n"
 check_priv
 case $OP in
    help)
@@ -259,7 +260,9 @@ case $OP in
     fix_context;;
    version)
      printf "\nVersion: $VERSION";;
-   *)
+   status)
      status;;
+   *)
+    exit 
 esac
 printf "\n\n${BLUE}***********************************************\n"
