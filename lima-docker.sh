@@ -57,12 +57,12 @@ OP=$1
 #Check privileges -make sure everyone is running with admin
 check_priv() {
   if ! (groups $USER | grep -q -w admin); then
-    printf "\n${MAG}❌ Not Running ${CYAN}as ${RED}Admin.\n"
+    printf "\n${MAG}❌ Not Running ${CYAN}as ${RED}Admin.\n\n"
     printf "\n${CYAN}✅ Please ${MAG}use ${GREEN}Privileges ${CYAN}to become an administrator and ${MAG}Re-Run ${CYAN}the script.\n"
     printf "\n\n${BLUE}***********************************************\n"
     exit 1
   else
-    printf "\n${MAG}✅ Running ${CYAN}as ${GREEN}Admin.\n"
+    printf "\n${MAG}✅ Running ${CYAN}as ${GREEN}Admin.\n\n"
   fi
 }
 
@@ -73,14 +73,15 @@ show_log() {
 
 # Show help
 show_help() {
-  printf "${CYAN}test    - will run docker hello-world\n"
-  printf "${CYAN}log     - will display the latest log from the script\n"
-  printf "${CYAN}prereq  - will check and install brew pre-reqs for the script\n"
-  printf "${CYAN}start   - will start the docker vm and switch the docker context to that vm\n"
-  printf "${CYAN}stop    - will stop the docker vm and switch the docker context to $DEFAULT\n"
-  printf "${CYAN}delete  - will delete the docker vm and switch the docker context to $DEFAULT\n"
-  printf "${CYAN}fix  - will switch the docker context to $CONTEXT\n"
-  printf "${CYAN}help    - show this\n"
+  printf "${MAG}${0##*/} ${YELLOW}test    - ${GREEN}will run Docker hello-world\n"
+  printf "${MAG}${0##*/} ${YELLOW}log     - ${GREEN}will display the latest log from the script\n"
+  printf "${MAG}${0##*/} ${YELLOW}prereq  - ${GREEN}will check and install brew pre-reqs for the script\n"
+  printf "${MAG}${0##*/} ${YELLOW}status  - ${GREEN}will show the current status of the Docker VM and Docker Context\n"
+  printf "${MAG}${0##*/} ${YELLOW}start   - ${GREEN}will start the Docker VM and switch the Docker Context to that VM\n"
+  printf "${MAG}${0##*/} ${YELLOW}stop    - ${GREEN}will stop the Docker VM and switch the Docker Context to ${CYAN}\$DEFAULT\n"
+  printf "${MAG}${0##*/} ${YELLOW}delete  - ${GREEN}will delete the Docker VM and switch the Docker Context to ${CYAN}\$DEFAULT\n"
+  printf "${MAG}${0##*/} ${YELLOW}fix     - ${GREEN}will switch the Docker Context to ${CYAN}\$CONTEXT\n"
+  printf "${MAG}${0##*/} ${YELLOW}help    - ${GREEN}show this\n"
 }
 
 # Check brew formulas
