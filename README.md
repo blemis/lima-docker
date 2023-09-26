@@ -3,7 +3,9 @@ lima-docker script for Apple Silicon Macs
 
 Sets up up a remote docker VM that works with M1/M2 macs.  
 Uses new Apple virtualization type "vz" and experimental mount type "virtiofs".
+Replaces Docker Desktop, and removes some limitations of colima.
 
+## lima-docker-rootful.yaml
 Example lima-docker-rootful.yaml config file uses.
 1) ubuntu base image - no cgroups v2 issues like colima (Alpine) has
 2) vcpus:4
@@ -16,7 +18,7 @@ Example lima-docker-rootful.yaml config file uses.
 Tailor to your specific needs!
 
 
-lima-docker.sh
+## lima-docker.sh
 
 1) Configure the the Docker Context name. $CONTEXT (i.e. "lima-docker-rootful")
 2) Confiugure the Docker Default context $DEFAULT  (i.e. "default")
@@ -28,7 +30,7 @@ The name of the lima config yaml file should match the name of the context.
 CONTEXT="lima-docker-rootful"
 LIMACFG="$Home/artifacts/lima/lima-docker-rootful.yaml"
 
-ARGS:  
+## ARGS:  
 
 lima-docker.sh ARG
 
