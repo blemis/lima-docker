@@ -45,7 +45,7 @@ MAG='\033[0;35m'
 NO_COLOR='\033[0m'
 
 # Actions
-ACTIONS=( test log prereq status start stop delete fix help )
+ACTIONS=( test log prereq status start stop delete fix help shell )
 
 # Check Line Args (should be 1)
 if [ "$#" -lt 1 ]; then
@@ -61,7 +61,7 @@ fi
 OP=$1
 
 #Check privileges -make sure everyone is running with admin
-check_priv() {
+function check_priv() {
   if ! (groups $USER | grep -q -w admin); then
     printf "\n${MAG}❌ Not Running ${CYAN}as ${RED}Admin.\n\n"
     printf "\n${CYAN}✅ Please ${MAG}use ${GREEN}Privileges ${CYAN}to become an administrator and ${MAG}Re-Run ${CYAN}the script.\n"
@@ -73,12 +73,12 @@ check_priv() {
 }
 
 # Show log
-show_log() {
+function show_log() {
   cat $LIMADIR/log
 }
 
 # Show help
-show_help() {
+function show_help() {
   printf "${MAG}${0##*/} ${YELLOW}test    - ${GREEN}will run Docker hello-world\n"
   printf "${MAG}${0##*/} ${YELLOW}log     - ${GREEN}will display the latest log from the script\n"
   printf "${MAG}${0##*/} ${YELLOW}prereq  - ${GREEN}will check and install brew pre-reqs for the script\n"
@@ -88,17 +88,24 @@ show_help() {
   printf "${MAG}${0##*/} ${YELLOW}delete  - ${GREEN}will delete the Docker VM and switch the Docker Context to ${CYAN}\$DEFAULT\n"
   printf "${MAG}${0##*/} ${YELLOW}fix     - ${GREEN}will switch the Docker Context to ${CYAN}\$CONTEXT\n"
   printf "${MAG}${0##*/} ${YELLOW}version - ${GREEN}will display the version info\n"
+  printf "${MAG}${0##*/} ${YELLOW}shell   - ${GREEN}will shell into Docker VM ${CYAN}\$CONTEXT\n"
   printf "${MAG}${0##*/} ${YELLOW}help    - ${GREEN}show this\n"
 }
 
+# Get shell for Docker VM
+function get_shell() {
+  printf "\n${MAG}Bashing ${CYAN}into Docker VM ${YELLOW}$CONTEXT\n\n"
+  limactl shell $CONTEXT bash
+  printf "\n${MAG}Exiting ${CYAN}Docker VM ${YELLOW}$CONTEXT\n\n"
+}
 # Check brew formulas
-formula_installed() {
+function formula_installed() {
     [ "$(brew list | grep $1)" ]
     return $?
 }
 
 # Check PreReqs and install if needed
-process_prereq() {
+function process_prereq() {
     printf "${CYAN}Checking/Installing pre-reqs you may need to provide a password for sudo.\n"
     for item in ${PREREQS[*]}
       do
@@ -234,7 +241,7 @@ function docker_test() {
   fi
 }
 
-printf "${GREEN}Running $OP\n"
+printf "\n${GREEN}Running $OP\n"
 printf "${BLUE}***********************************************\n"
 check_priv
 case $OP in
@@ -262,6 +269,8 @@ case $OP in
      printf "\nVersion: $VERSION";;
    status)
      status;;
+   shell)
+     get_shell;;
    *)
     exit 
 esac

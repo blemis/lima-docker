@@ -46,6 +46,7 @@ lima-docker.sh ARG
 7) delete  - will delete the docker vm and switch the docker context to $DEFAULT
 8) fix     - will switch the Docker Context to $CONTEXT
 9) version - will display the version info
-10) help   - will display help
+10) shell  - will launch bash shell in DOCKER VM $CONTEXT
+11) help   - will display help
 
    
