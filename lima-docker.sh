@@ -1,24 +1,51 @@
 #!/usr/bin/env bash
-#
-# Copyright 2023 SAP SE or an SAP affiliate company. All rights reserved. This file is licensed under the Apache Software License, v. 2 except as noted otherwise in the LICENSE file
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#      http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-# Jeff Estes, SCS 
-#
+#================================================================
+# HEADER
+#================================================================
+#% SYNOPSIS
+#+    ${SCRIPT_NAME} ARGS ...
+#%
+#% DESCRIPTION
+#%    This script manages and creates a rootful docker vm using
+#%    lima.
+#%
+#% ARGS
+#%    test    - will run docker hello-world
+#%    log     - will display the latest log from the script
+#%    prereq  - will check and install brew pre-reqs for the script
+#%    status  - will show the current status of the Docker VM and Docker Context
+#%    start   - will start the docker vm and switch the docker context to $CONTEXT
+#%    stop    - will stop the docker vm and switch the docker context to $DEFAULT
+#%    delete  - will delete the docker vm and switch the docker context to $DEFAULT
+#%    fix     - will switch the Docker Context to $CONTEXT
+#%    version - will display the version info
+#%    shell  - will launch bash shell in DOCKER VM $CONTEXT
+#%    help   - will display help
+#%
+#% EXAMPLES
+#%    ${SCRIPT_NAME} start 
+#%    ${SCRIPT_NAME} stop
+#%
+#================================================================
+#- IMPLEMENTATION
+#-    version         ${SCRIPT_NAME} (www.sap.com) 1.0.0
+#-    author          Jeff Estes
+#-    copyright       Copyright (c) 2023 SAP SE or an SAP affiliate company. All rights reserved.
+#-    license         GNU General Public License 3.0
+#-
+#================================================================
+#  HISTORY
+#     2023/09/25 : jeff.estes01@sap.com : Script creation
+# 
+#================================================================
+# END_OF_HEADER
+#================================================================
+
+# Script Name
+SCRIPT_NAME="${0##*/}"
 
 # Version
-VERSION=1.0
+VERSION=1.0.0
 
 # Using Gardener?
 GARDENER=true
@@ -28,6 +55,7 @@ PREREQS=( lima socket_vmnet docker jq )
 
 # name docker VM context
 CONTEXT="lima-docker-rootful"
+CURR_CONTEXT=`(docker context inspect|jq -r '.[]| .Name')`
 DEFAULT="default"
 
 # lima config locations
@@ -42,10 +70,14 @@ GREENBACK='\033[0;42m'
 YELLOW='\033[1;33m'
 CYAN='\033[0;36m'
 MAG='\033[0;35m'
+BLINK='\033[31;5m'
 NO_COLOR='\033[0m'
 
 # Actions
 ACTIONS=( test log prereq status start stop delete fix help shell )
+
+# Status
+STATUS=""
 
 # Check Line Args (should be 1)
 if [ "$#" -lt 1 ]; then
@@ -79,25 +111,31 @@ function show_log() {
 
 # Show help
 function show_help() {
-  printf "${MAG}${0##*/} ${YELLOW}test    - ${GREEN}will run Docker hello-world\n"
-  printf "${MAG}${0##*/} ${YELLOW}log     - ${GREEN}will display the latest log from the script\n"
-  printf "${MAG}${0##*/} ${YELLOW}prereq  - ${GREEN}will check and install brew pre-reqs for the script\n"
-  printf "${MAG}${0##*/} ${YELLOW}status  - ${GREEN}will show the current status of the Docker VM and Docker Context\n"
-  printf "${MAG}${0##*/} ${YELLOW}start   - ${GREEN}will start the Docker VM and switch the Docker Context to that VM\n"
-  printf "${MAG}${0##*/} ${YELLOW}stop    - ${GREEN}will stop the Docker VM and switch the Docker Context to ${CYAN}\$DEFAULT\n"
-  printf "${MAG}${0##*/} ${YELLOW}delete  - ${GREEN}will delete the Docker VM and switch the Docker Context to ${CYAN}\$DEFAULT\n"
-  printf "${MAG}${0##*/} ${YELLOW}fix     - ${GREEN}will switch the Docker Context to ${CYAN}\$CONTEXT\n"
-  printf "${MAG}${0##*/} ${YELLOW}version - ${GREEN}will display the version info\n"
-  printf "${MAG}${0##*/} ${YELLOW}shell   - ${GREEN}will shell into Docker VM ${CYAN}\$CONTEXT\n"
-  printf "${MAG}${0##*/} ${YELLOW}help    - ${GREEN}show this\n"
+  printf "${MAG}${SCRIPT_NAME} ${YELLOW}test    - ${GREEN}will run Docker hello-world\n"
+  printf "${MAG}${SCRIPT_NAME} ${YELLOW}log     - ${GREEN}will display the latest log from the script\n"
+  printf "${MAG}${SCRIPT_NAME} ${YELLOW}prereq  - ${GREEN}will check and install brew pre-reqs for the script\n"
+  printf "${MAG}${SCRIPT_NAME} ${YELLOW}status  - ${GREEN}will show the current status of the Docker VM and Docker Context\n"
+  printf "${MAG}${SCRIPT_NAME} ${YELLOW}start   - ${GREEN}will start the Docker VM and switch the Docker Context to that VM\n"
+  printf "${MAG}${SCRIPT_NAME} ${YELLOW}stop    - ${GREEN}will stop the Docker VM and switch the Docker Context to ${CYAN}\$DEFAULT\n"
+  printf "${MAG}${SCRIPT_NAME} ${YELLOW}delete  - ${GREEN}will delete the Docker VM and switch the Docker Context to ${CYAN}\$DEFAULT\n"
+  printf "${MAG}${SCRIPT_NAME} ${YELLOW}fix     - ${GREEN}will switch the Docker Context to ${CYAN}\$CONTEXT\n"
+  printf "${MAG}${SCRIPT_NAME} ${YELLOW}version - ${GREEN}will display the version info\n"
+  printf "${MAG}${SCRIPT_NAME} ${YELLOW}shell   - ${GREEN}will shell into Docker VM ${CYAN}\$CONTEXT\n"
+  printf "${MAG}${SCRIPT_NAME} ${YELLOW}help    - ${GREEN}show this\n"
 }
 
 # Get shell for Docker VM
 function get_shell() {
-  printf "\n${MAG}Bashing ${CYAN}into Docker VM ${YELLOW}$CONTEXT\n\n"
-  limactl shell $CONTEXT bash
-  printf "\n${MAG}Exiting ${CYAN}Docker VM ${YELLOW}$CONTEXT\n\n"
+  if [ "$STATUS" = "Running" ] &&  [ "$CURR_CONTEXT" = "$CONTEXT" ]; then
+    printf "\n${MAG}Bashing ${CYAN}into Docker VM ${YELLOW}$CONTEXT\n\n"
+    limactl shell --log-level info $CONTEXT bash
+    printf "\n${MAG}Exiting ${CYAN}Docker VM ${YELLOW}$CONTEXT\n\n"
+  else
+    printf "${CYAN}❌ Docker VM ${YELLOW}$CONTEXT ${BLINK}Not Found${NO_COLOR}\n"
+    printf "${CYAN}❌ Docker ${BLINK}InActive${NO_COLOR}\n" 
+  fi
 }
+
 # Check brew formulas
 function formula_installed() {
     [ "$(brew list | grep $1)" ]
@@ -119,9 +157,13 @@ function process_prereq() {
       done
 }
 
+function silent_status() {
+  STATUS=`(limactl list --log-level error --json |jq -r  --arg CONTEXT "$CONTEXT" 'select( .name as $a | $CONTEXT | index($a))'| jq .status)|tr -d '"'`
+}
+
 # cheap way to get status from lima
 function status() {
-    STATUS=`(limactl list --log-level error --json |jq -r  --arg CONTEXT "$CONTEXT" 'select( .name as $a | $CONTEXT | index($a))'| jq .status)|tr -d '"'`
+    silent_status
     get_context
     printf "⏳ ${MAG}Checking ${CYAN}Docker VM ${YELLOW}$CONTEXT.\n"
     case $STATUS in
@@ -140,9 +182,8 @@ function status() {
         printf "${CYAN}❌ Docker ${RED}InActive\n"
         ;;
       *)
-        COLOR=${RED}
-        printf "${CYAN}❌ Docker VM ${YELLOW}$CONTEXT ${COLOR}Not Found\n"
-        printf "${CYAN}❌ Docker ${RED}InActive\n"
+        printf "${CYAN}❌ Docker VM ${YELLOW}$CONTEXT ${BLINK}Not Found${NO_COLOR}\n"
+        printf "${CYAN}❌ Docker ${BLINK}InActive${NO_COLOR}\n"
         ;;
     esac
 }
@@ -167,7 +208,7 @@ function fix_context() {
     docker context use $CONTEXT > /dev/null 2>&1
     CURR_CONTEXT=$CONTEXT
   else
-    printf "\n${CYAN}✅Current Docker Context ${YELLOW}$CURR_CONTEXT ${CYAN}and Docker VM ${YELLOW}$CONTEXT ${CYAN}already ${GREEN}match.\n" 
+    printf "\n${CYAN}✅ Current Docker Context ${YELLOW}$CURR_CONTEXT ${CYAN}and Docker VM ${YELLOW}$CONTEXT ${CYAN}already ${GREEN}match.\n" 
   fi
 }
 
@@ -176,10 +217,10 @@ function start() {
     case $STATUS in
         Stopped)
             printf "\n⏳ ${MAG}Starting ${RED}Stopped ${CYAN}Docker VM ${YELLOW}$CONTEXT.\n"
-            limactl start --tty=false $CONTEXT > /dev/null 2>&1;;
+            limactl start --log-level info --tty=false $CONTEXT > $LIMADIR/log 2>&1;;
         "")
             printf "\n⏳ ${MAG}Creating ${CYAN}and ${MAG}starting ${CYAN}Docker VM ${YELLOW}$CONTEXT.\n" 
-            limactl start --tty=false --name=$CONTEXT $LIMACFG > /dev/null 2>&1;;
+            limactl start --log-level info --tty=false --name=$CONTEXT $LIMACFG > $LIMADIR/log 2>&1;;
         *)
             return
     esac    
@@ -204,8 +245,8 @@ function start() {
 function stop() { 
     if [ "$STATUS" = "Running" ]; then
         printf "⏳ ${MAG}Stopping ${CYAN}Docker VM ${YELLOW}$CONTEXT.\n"
-        limactl stop $CONTEXT > $LIMADIR/log 2>&1
-        printf "${CYAN}❌ Docker ${RED}InActive\n"
+        limactl stop --log-level info $CONTEXT > $LIMADIR/log 2>&1
+        printf "${CYAN}❌ Docker ${BLINK}InActive${NO_COLOR}\n"
     fi
     docker context use $DEFAULT > /dev/null 2>&1
     CURR_CONTEXT=$DEFAULT
@@ -216,10 +257,10 @@ function stop() {
 function delete() {
     if [ "$STATUS" = "Running" ]; then
         printf "⏳ ${MAG}Stopping ${CYAN}Docker VM ${YELLOW}$CONTEXT.\n"
-        limactl stop $CONTEXT > $LIMADIR/log 2>&1
+        limactl stop --log-level info $CONTEXT > $LIMADIR/log 2>&1
         
     fi
-    limactl rm $CONTEXT > /dev/null 2>&1
+    limactl rm --log-level info $CONTEXT > $LIMADIR/log 2>&1
     if ! [ "$STATUS" = "" ]; then
       printf "\n⏳ ${MAG}Deleting ${CYAN}Docker VM ${YELLOW}$CONTEXT.\n"
       printf "${CYAN}✅ Docker VM ${YELLOW}$CONTEXT ${RED}Deleted\n"
@@ -234,10 +275,10 @@ function delete() {
 
 # Runs hello-world as a test
 function docker_test() {
-  if [ "$STATUS" = "Running" ]; then
+  if [ "$STATUS" = "Running" ] &&  [ "$CURR_CONTEXT" = "$CONTEXT" ]; then
     docker run hello-world
   else 
-    printf "⏳${CYAN} Test ${MAG}skipped. ${CYAN}Please ${MAG}start ${CYAN}docker.\n"
+    printf "⏳${CYAN} Test ${MAG}skipped. ${CYAN}Please ${MAG}start/fix ${CYAN}docker.\n"
   fi
 }
 
@@ -252,16 +293,16 @@ case $OP in
    prereq)
      process_prereq;;
    start)
-     status
+     silent_status
      start;;
    stop)
-     status
+     silent_status
      stop;;
    delete)
-     status
+     silent_status
      delete;;
    test)
-     status
+     silent_status
      docker_test;;
    fix)
     fix_context;;
@@ -270,6 +311,7 @@ case $OP in
    status)
      status;;
    shell)
+     silent_status
      get_shell;;
    *)
     exit 
