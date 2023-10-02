@@ -47,21 +47,6 @@ SCRIPT_NAME="${0##*/}"
 # Version
 VERSION=1.0.0
 
-# Using Gardener?
-GARDENER=true
-
-# PreReqs
-PREREQS=( lima socket_vmnet docker jq )
-
-# name docker VM context
-CONTEXT="lima-docker-rootful"
-CURR_CONTEXT=`(docker context inspect|jq -r '.[]| .Name')`
-DEFAULT="default"
-
-# lima config locations
-LIMACFG="$HOME/artifacts/lima/$CONTEXT.yaml"
-LIMADIR="$HOME/.lima"
-
 # color setup
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -73,8 +58,28 @@ MAG='\033[0;35m'
 BLINK='\033[31;5m'
 NO_COLOR='\033[0m'
 
+# Set Editor
+if ! [ $EDITOR ]; then
+  EDITOR="/usr/bin/vim"
+fi
+
+# PreReqs
+PREREQS=( lima socket_vmnet docker jq )
+
+# Using Gardener?
+GARDENER=true
+
+# name docker VM context
+CONTEXT="lima-docker-rootful"
+CURR_CONTEXT=`(docker context inspect|jq -r '.[]| .Name')`
+DEFAULT="default"
+
+# lima config locations
+LIMACFG="$HOME/artifacts/lima/$CONTEXT.yaml"
+LIMADIR="$HOME/.lima"
+
 # Actions
-ACTIONS=( test log prereq status start stop delete fix help shell )
+ACTIONS=( test log prereq status start stop delete fix help shell config )
 
 # Status
 STATUS=""
@@ -121,6 +126,7 @@ function show_help() {
   printf "${MAG}${SCRIPT_NAME} ${YELLOW}fix     - ${GREEN}will switch the Docker Context to ${CYAN}\$CONTEXT\n"
   printf "${MAG}${SCRIPT_NAME} ${YELLOW}version - ${GREEN}will display the version info\n"
   printf "${MAG}${SCRIPT_NAME} ${YELLOW}shell   - ${GREEN}will shell into Docker VM ${CYAN}\$CONTEXT\n"
+  printf "${MAG}${SCRIPT_NAME} ${YELLOW}config  - ${GREEN}will use $EDITOR to edit the lima config file ${CYAN}\$LIMACFG\n"
   printf "${MAG}${SCRIPT_NAME} ${YELLOW}help    - ${GREEN}show this\n"
 }
 
@@ -134,6 +140,23 @@ function get_shell() {
     printf "${CYAN}❌ Docker VM ${YELLOW}$CONTEXT ${BLINK}Not Found${NO_COLOR}\n"
     printf "${CYAN}❌ Docker ${BLINK}InActive${NO_COLOR}\n" 
   fi
+}
+
+# Edit the Lima Config file
+function edit_config() {
+  $EDITOR $LIMACFG
+  printf "${MAG}Exiting ${CYAN}config file ${YELLOW}$LIMACFG\n"
+}
+
+# Check command line args
+function check_op() {
+  if [[ ${ACTIONS[@]} =~ $OP ]]; then
+    printf "\n${GREEN}Running $OP\n"
+  else
+    printf "\n${CYAN}Command ${RED}$OP ${CYAN}not found.\n\n"
+    exit 0
+  fi 
+  printf "${BLUE}***********************************************\n"
 }
 
 # Check brew formulas
@@ -282,9 +305,10 @@ function docker_test() {
   fi
 }
 
-printf "\n${GREEN}Running $OP\n"
-printf "${BLUE}***********************************************\n"
+
+
 check_priv
+check_op
 case $OP in
    help)
      show_help;;
@@ -313,6 +337,8 @@ case $OP in
    shell)
      silent_status
      get_shell;;
+   config)
+     edit_config;;
    *)
     exit 
 esac
