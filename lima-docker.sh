@@ -20,6 +20,7 @@
 #%    fix     - will switch the Docker Context to $CONTEXT
 #%    version - will display the version info
 #%    shell  - will launch bash shell in DOCKER VM $CONTEXT
+#%    config - will use $EDITOR to edit the lima config file $LIMACFG
 #%    help   - will display help
 #%
 #% EXAMPLES
