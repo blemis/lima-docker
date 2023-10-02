@@ -253,6 +253,8 @@ function start() {
     if ( $GARDENER ); then
       printf "⏳ ${MAG}Adding ${CYAN}GARDENER Specific Config.\n" 
       limactl shell $CONTEXT sudo mkdir -m 0777 -p \
+        /etc/gardner \
+        /etc/gardener/local-registry \
         /etc/gardener/local-registry/gcr \
 	      /etc/gardener/local-registry/localhost \
 	      /etc/gardener/local-registry/gcr-eu \

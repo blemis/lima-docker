@@ -47,7 +47,8 @@ lima-docker.sh ARG
 8) fix     - will switch the Docker Context to $CONTEXT
 9) version - will display the version info
 10) shell  - will launch bash shell in DOCKER VM $CONTEXT
-11) help   - will display help
+11) config - will use $EDITOR to edit the lima config file $LIMACFG
+12) help   - will display help
 ## Aliases
 
 add to your .bashrc, .bash_aliases, or .zshrc file
