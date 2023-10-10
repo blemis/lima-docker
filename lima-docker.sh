@@ -80,7 +80,7 @@ LIMACFG="$HOME/artifacts/lima/$CONTEXT.yaml"
 LIMADIR="$HOME/.lima"
 
 # Actions
-ACTIONS=( test log prereq status start stop delete fix help shell config )
+ACTIONS=( test log prereq status start stop delete fix help shell config version )
 
 # Status
 STATUS=""
@@ -336,7 +336,7 @@ case $OP in
    fix)
     fix_context;;
    version)
-     printf "\nVersion: $VERSION";;
+     printf "\nVersion: ${GREEN}$VERSION";;
    status)
      status;;
    shell)
