@@ -138,8 +138,8 @@ function get_shell() {
     limactl shell --log-level info $CONTEXT bash
     printf "\n${MAG}Exiting ${CYAN}Docker VM ${YELLOW}$CONTEXT\n\n"
   else
-    printf "${CYAN}❌ Docker VM ${YELLOW}$CONTEXT ${BLINK}Not Found${NO_COLOR}\n"
-    printf "${CYAN}❌ Docker ${BLINK}InActive${NO_COLOR}\n" 
+    printf "${CYAN}❌ Docker VM ${YELLOW}$CONTEXT ${RED}Not Found${NO_COLOR}\n"
+    printf "${CYAN}❌ Docker ${RED}InActive${NO_COLOR}\n" 
   fi
 }
 
@@ -189,25 +189,25 @@ function silent_status() {
 function status() {
     silent_status
     get_context
-    printf "⏳ ${MAG}Checking ${CYAN}Docker VM ${YELLOW}$CONTEXT.\n"
+    printf "⏳ ${MAG}Checking ${CYAN}Docker VM.\n"
     case $STATUS in
       Running)
         COLOR=${GREEN}
-        printf "${CYAN}✅ Docker VM ${YELLOW}$CONTEXT ${COLOR}$STATUS\n"
+        printf "${CYAN}✅ Docker VM ${COLOR}$STATUS\n"
         if [[ "$CURR_CONTEXT" != "$CONTEXT" ]]; then
-          printf "${CYAN}❌ Docker ${GREEN}Active${CYAN}, but set to context ${RED}$CURR_CONTEXT.\n"
+          printf "${CYAN}❌ Docker ${GREEN}Active${CYAN}, but set to different context ${RED}$CURR_CONTEXT.\n"
         else
           printf "${CYAN}✅ Docker ${GREEN}Active\n"
         fi
         ;;
       Stopped)
         COLOR=${RED}
-        printf "${CYAN}❌ Docker VM ${YELLOW}$CONTEXT ${COLOR}$STATUS\n"
+        printf "${CYAN}❌ Docker VM ${COLOR}$STATUS\n"
         printf "${CYAN}❌ Docker ${RED}InActive\n"
         ;;
       *)
-        printf "${CYAN}❌ Docker VM ${YELLOW}$CONTEXT ${BLINK}Not Found${NO_COLOR}\n"
-        printf "${CYAN}❌ Docker ${BLINK}InActive${NO_COLOR}\n"
+        printf "${CYAN}❌ Docker VM ${RED}Not Found${NO_COLOR}\n"
+        printf "${CYAN}❌ Docker ${RED}InActive${NO_COLOR}\n"
         ;;
     esac
 }
@@ -232,7 +232,7 @@ function fix_context() {
     docker context use $CONTEXT > /dev/null 2>&1
     CURR_CONTEXT=$CONTEXT
   else
-    printf "\n${CYAN}✅ Current Docker Context ${YELLOW}$CURR_CONTEXT ${CYAN}and Docker VM ${YELLOW}$CONTEXT ${CYAN}already ${GREEN}match.\n" 
+    printf "\n${CYAN}✅ Current Docker Context ${YELLOW}$CURR_CONTEXT ${CYAN}and Docker VM ${CYAN}already ${GREEN}match.\n" 
   fi
 }
 
@@ -240,10 +240,10 @@ function fix_context() {
 function start() {
     case $STATUS in
         Stopped)
-            printf "\n⏳ ${MAG}Starting ${RED}Stopped ${CYAN}Docker VM ${YELLOW}$CONTEXT.\n"
+            printf "\n⏳ ${MAG}Starting ${RED}Stopped ${CYAN}Docker VM.\n"
             limactl start --log-level info --tty=false $CONTEXT > $LIMADIR/log 2>&1;;
         "")
-            printf "\n⏳ ${MAG}Creating ${CYAN}and ${MAG}starting ${CYAN}Docker VM ${YELLOW}$CONTEXT.\n" 
+            printf "\n⏳ ${MAG}Creating ${CYAN}and ${MAG}starting ${CYAN}Docker VM.\n" 
             limactl start --log-level info --tty=false --name=$CONTEXT $LIMACFG > $LIMADIR/log 2>&1;;
         *)
             return
@@ -270,27 +270,29 @@ function start() {
 # stops current context docker image
 function stop() { 
     if [ "$STATUS" = "Running" ]; then
-        printf "⏳ ${MAG}Stopping ${CYAN}Docker VM ${YELLOW}$CONTEXT.\n"
+        printf "⏳ ${MAG}Stopping ${CYAN}Docker VM.\n"
         limactl stop --log-level info $CONTEXT > $LIMADIR/log 2>&1
-        printf "${CYAN}❌ Docker ${BLINK}InActive${NO_COLOR}\n"
+        printf "${CYAN}✅ Docker ${RED}InActive${NO_COLOR}\n"
+    else
+       printf "${CYAN}✅ Docker already ${RED}InActive${NO_COLOR}\n"
     fi
     docker context use $DEFAULT > /dev/null 2>&1
     CURR_CONTEXT=$DEFAULT
-    printf "⏳ ${MAG}Switching ${CYAN}Docker Context to ${YELLOW}$DEFAULT.\n"
+    printf "⏳ ${CYAN}Docker Context is now ${YELLOW}$DEFAULT.\n"
 }
 
 # deletes current context docker image
 function delete() {
     if [ "$STATUS" = "Running" ]; then
-        printf "⏳ ${MAG}Stopping ${CYAN}Docker VM ${YELLOW}$CONTEXT.\n"
+        printf "⏳ ${MAG}Stopping ${CYAN}Docker VM.\n"
         limactl stop --log-level info $CONTEXT > $LIMADIR/log 2>&1
         
     fi
     limactl rm --log-level info $CONTEXT > $LIMADIR/log 2>&1
     if ! [ "$STATUS" = "" ]; then
-      printf "\n⏳ ${MAG}Deleting ${CYAN}Docker VM ${YELLOW}$CONTEXT.\n"
-      printf "${CYAN}✅ Docker VM ${YELLOW}$CONTEXT ${RED}Deleted\n"
-      printf "${CYAN}❌ Docker ${RED}InActive\n"
+      printf "\n⏳ ${MAG}Deleting ${CYAN}Docker VM.\n"
+      printf "${CYAN}✅ Docker VM ${RED}Deleted\n"
+      printf "${CYAN}✅ Docker ${RED}InActive\n"
       docker context use $DEFAULT > /dev/null 2>&1
       printf "⏳ ${MAG}Switching ${CYAN}Docker Context to ${YELLOW}$DEFAULT.\n"
       CURR_CONTEXT=$DEFAULT
