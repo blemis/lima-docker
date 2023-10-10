@@ -46,7 +46,7 @@
 SCRIPT_NAME="${0##*/}"
 
 # Version
-VERSION=1.0.0
+VERSION=1.0.3
 
 # color setup
 RED='\033[0;31m'
@@ -134,7 +134,7 @@ function show_help() {
 # Get shell for Docker VM
 function get_shell() {
   if [ "$STATUS" = "Running" ] &&  [ "$CURR_CONTEXT" = "$CONTEXT" ]; then
-    printf "\n${MAG}Bashing ${CYAN}into Docker VM ${YELLOW}$CONTEXT\n\n"
+    printf "\n${MAG}Bashing ${CYAN}into Docker VM.\n\n"
     limactl shell --log-level info $CONTEXT bash
     printf "\n${MAG}Exiting ${CYAN}Docker VM ${YELLOW}$CONTEXT\n\n"
   else
