@@ -102,11 +102,15 @@ OP=$1
 function check_priv() {
   if ! (groups $USER | grep -q -w admin); then
     printf "\n${MAG}❌ Not Running ${CYAN}as ${RED}Admin.\n\n"
-    printf "\n${CYAN}✅ Please ${MAG}use ${GREEN}Privileges ${CYAN}to become an administrator and ${MAG}Re-Run ${CYAN}the script.\n"
+    printf "⏳${MAG} Attempting ${CYAN} to grant admin rights...\n\n"
+    /Applications/Privileges.app/Contents/Resources/PrivilegesCLI --add 
+    if ! (groups $USER | grep -q -w admin); then
+      printf "\n${CYAN}✅ Please ${MAG}use ${GREEN}Privileges ${CYAN}to become an administrator and ${MAG}Re-Run ${CYAN}the script.\n"
+      exit 1
+    fi
     printf "\n\n${BLUE}***********************************************\n"
-    exit 1
-  #else
-  #  printf "\n${MAG}✅ Running ${CYAN}as ${GREEN}Admin.\n\n"
+  else
+    printf "\n${MAG}✅ Running ${CYAN}as ${GREEN}Admin.\n\n"
   fi
 }
 
